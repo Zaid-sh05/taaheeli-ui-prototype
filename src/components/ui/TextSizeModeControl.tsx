@@ -1,7 +1,8 @@
 import { useTextSizeMode } from "@/context/TextSizeModeContext";
 import { TEXT_SIZE_MODES } from "@/tokens/a11y";
 import { cn } from "@/lib/cn";
-import { useRole } from "@/context/RoleContext";
+import { useSession } from "@/context/SessionContext";
+import { ROLES } from "@/config/roles";
 import type { Audience } from "@/config/roles";
 
 const audienceMinTarget: Record<Audience, string> = {
@@ -11,8 +12,9 @@ const audienceMinTarget: Record<Audience, string> = {
 
 export function TextSizeModeControl() {
   const { mode, setMode } = useTextSizeMode();
-  const roleCtx = useRole();
-  const audience = roleCtx.audience ?? "staff";
+  const { session, selectedRole } = useSession();
+  const role = session?.role ?? selectedRole ?? "manager";
+  const audience: Audience = ROLES[role]?.audience ?? "staff";
 
   return (
     <div className="flex items-center gap-2" role="group" aria-label="حجم النص">

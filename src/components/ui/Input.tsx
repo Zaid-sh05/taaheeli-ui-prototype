@@ -1,6 +1,7 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
-import { useRole } from "@/context/RoleContext";
+import { useSession } from "@/context/SessionContext";
+import { ROLES } from "@/config/roles";
 import type { Audience } from "@/config/roles";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -17,8 +18,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   { hasError, audience, className, ...props },
   ref,
 ) {
-  const roleCtx = useRole();
-  const effectiveAudience: Audience = audience ?? roleCtx.audience ?? "staff";
+  const { session, selectedRole } = useSession();
+  const role = session?.role ?? selectedRole ?? "manager";
+  const effectiveAudience: Audience = audience ?? ROLES[role]?.audience ?? "staff";
 
   return (
     <input

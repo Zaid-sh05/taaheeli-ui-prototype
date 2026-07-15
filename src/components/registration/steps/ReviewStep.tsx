@@ -21,7 +21,6 @@ export function ReviewStep({ form }: Props) {
     <div>
       <h3 className="text-xl font-bold text-ink mb-4">مراجعة البيانات قبل الإرسال</h3>
       <p className="text-base text-neutral-600 mb-4">يرجى التأكد من صحة البيانات التالية قبل إرسال الطلب.</p>
-
       <dl className="rounded-lg bg-white border border-neutral-100 px-4">
         <Row label="اسم المستخدم" value={form.username} />
         <Row label="الاسم الكامل" value={form.fullName} />

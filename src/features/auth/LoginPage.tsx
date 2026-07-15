@@ -1,9 +1,8 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, LogIn } from "lucide-react";
-import { useRole } from "@/context/RoleContext";
+import { useSession, ROLE_HOME } from "@/context/SessionContext";
 import { ROLES } from "@/config/roles";
-import { findUser, MOCK_PASSWORD } from "@/mock/users";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useFocusOnMount } from "@/hooks/useFocusOnMount";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -14,21 +13,20 @@ import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Field } from "@/components/ui/Field";
 import { FormErrorSummary } from "@/components/feedback/FormErrorSummary";
-import { Alert } from "@/components/ui/Alert";
 
 export function LoginPage() {
   useDocumentTitle("تسجيل الدخول");
   const navigate = useNavigate();
-  const { role, setRole } = useRole();
+  const { selectedRole, login } = useSession();
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
-  const [topError, setTopError] = useState<string | null>(null);
 
-  const roleMeta = role ? ROLES[role] : null;
+  const roleMeta = selectedRole ? ROLES[selectedRole] : null;
+  const showRegisterLink = selectedRole === "patient" || !selectedRole;
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -37,23 +35,12 @@ export function LoginPage() {
     if (!password) errs.push("كلمة المرور مطلوبة");
     if (errs.length > 0) {
       setErrors(errs);
-      setTopError(null);
       return;
     }
 
-    const user = findUser(username);
-    if (!user || password !== MOCK_PASSWORD) {
-      setErrors([]);
-      setTopError("اسم المستخدم أو كلمة المرور غير صحيحة. (للتجربة استخدم كلمة المرور: 123456)");
-      return;
-    }
-
-    setRole(user.role);
-    if (user.status === "pending") {
-      navigate("/pending-activation");
-    } else {
-      navigate("/app");
-    }
+    const role = selectedRole ?? "patient";
+    login(role, username.trim());
+    navigate(ROLE_HOME[role]);
   }
 
   return (
@@ -67,7 +54,6 @@ export function LoginPage() {
       </h2>
 
       <Card>
-        {topError && <Alert tone="error" className="mb-4">{topError}</Alert>}
         {errors.length > 0 && <FormErrorSummary errors={errors} className="mb-4" />}
 
         <form onSubmit={handleSubmit} noValidate>
@@ -116,17 +102,18 @@ export function LoginPage() {
               <Link to="/" className="text-primary-700 font-semibold hover:underline">
                 تغيير الدور
               </Link>
-              <Link to="/register/patient" className="text-primary-700 font-semibold hover:underline">
-                تسجيل مريض جديد
-              </Link>
+              {showRegisterLink && (
+                <Link to="/register/patient" className="text-primary-700 font-semibold hover:underline">
+                  تسجيل مريض جديد
+                </Link>
+              )}
             </div>
           </div>
         </form>
       </Card>
 
       <p className="mt-4 text-sm text-neutral-500 text-center">
-        نموذج تجريبي — استخدم أي اسم مستخدم من قائمة الأدوار وكلمة المرور <strong>123456</strong>.
-        المستخدم "noura" في حالة انتظار التفعيل.
+        أدخل أي اسم مستخدم وكلمة مرور لتجربة الواجهة المختارة.
       </p>
     </PageContainer>
   );

@@ -1,7 +1,8 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { useSession } from "@/context/SessionContext";
+import { ROLES } from "@/config/roles";
 import type { Audience } from "@/config/roles";
-import { useRole } from "@/context/RoleContext";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
@@ -18,8 +19,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary: "bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800",
-  secondary:
-    "bg-white text-primary-700 border-2 border-primary-300 hover:bg-primary-50 active:bg-primary-100",
+  secondary: "bg-white text-primary-700 border-2 border-primary-300 hover:bg-primary-50 active:bg-primary-100",
   ghost: "bg-transparent text-primary-700 hover:bg-primary-50 active:bg-primary-100",
   danger: "bg-error-600 text-white hover:bg-error-700 active:bg-error-800",
 };
@@ -36,23 +36,12 @@ const audienceMinTarget: Record<Audience, string> = {
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  {
-    variant = "primary",
-    size = "md",
-    audience,
-    fullWidth = false,
-    leftIcon,
-    rightIcon,
-    loading = false,
-    disabled,
-    className,
-    children,
-    ...props
-  },
+  { variant = "primary", size = "md", audience, fullWidth = false, leftIcon, rightIcon, loading = false, disabled, className, children, ...props },
   ref,
 ) {
-  const roleCtx = useRole();
-  const effectiveAudience: Audience = audience ?? roleCtx.audience ?? "staff";
+  const { session, selectedRole } = useSession();
+  const role = session?.role ?? selectedRole ?? "manager";
+  const effectiveAudience: Audience = audience ?? ROLES[role]?.audience ?? "staff";
 
   return (
     <button
@@ -70,11 +59,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       )}
       {...props}
     >
-      {loading ? (
-        <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-      ) : (
-        leftIcon
-      )}
+      {loading ? <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" /> : leftIcon}
       {children}
       {!loading && rightIcon}
     </button>

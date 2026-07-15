@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 import type { ReactNode } from "react";
-import { CircleCheck as CheckCircle2, TriangleAlert as AlertTriangle, Circle as XCircle, Clock } from "lucide-react";
+import { CircleCheck as CheckCircle2, TriangleAlert as AlertTriangle, Circle as XCircle, Clock, Info } from "lucide-react";
 
 type Tone = "info" | "success" | "warning" | "error" | "pending";
 
@@ -20,7 +20,7 @@ const toneClasses: Record<Tone, string> = {
 };
 
 const icons: Record<Tone, ReactNode> = {
-  info: <CheckCircle2 className="h-5 w-5 shrink-0" aria-hidden="true" />,
+  info: <Info className="h-5 w-5 shrink-0" aria-hidden="true" />,
   success: <CheckCircle2 className="h-5 w-5 shrink-0" aria-hidden="true" />,
   warning: <AlertTriangle className="h-5 w-5 shrink-0" aria-hidden="true" />,
   error: <XCircle className="h-5 w-5 shrink-0" aria-hidden="true" />,
@@ -29,14 +29,7 @@ const icons: Record<Tone, ReactNode> = {
 
 export function Alert({ tone = "info", title, children, className }: AlertProps) {
   return (
-    <div
-      role="alert"
-      className={cn(
-        "flex items-start gap-3 rounded-lg border-2 p-4 text-base",
-        toneClasses[tone],
-        className,
-      )}
-    >
+    <div role="alert" className={cn("flex items-start gap-3 rounded-lg border-2 p-4 text-base", toneClasses[tone], className)}>
       {icons[tone]}
       <div className="flex-1">
         {title && <p className="font-bold mb-1">{title}</p>}

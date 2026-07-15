@@ -24,18 +24,10 @@ export function RegistrationStepper({ currentIndex }: RegistrationStepperProps) 
                   !active && !done && "bg-neutral-100 text-neutral-600",
                 )}
               >
-                {done ? (
-                  <Check className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/30 text-xs">
-                    {i + 1}
-                  </span>
-                )}
+                {done ? <Check className="h-4 w-4" aria-hidden="true" /> : <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/30 text-xs">{i + 1}</span>}
                 <span>{step.label}</span>
               </span>
-              {i < STEPS.length - 1 && (
-                <span className="mx-1 h-px w-4 sm:w-8 bg-neutral-200" aria-hidden="true" />
-              )}
+              {i < STEPS.length - 1 && <span className="mx-1 h-px w-4 sm:w-8 bg-neutral-200" aria-hidden="true" />}
             </li>
           );
         })}

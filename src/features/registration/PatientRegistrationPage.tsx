@@ -16,6 +16,7 @@ import { ContactStep } from "@/components/registration/steps/ContactStep";
 import { ConsentStep } from "@/components/registration/steps/ConsentStep";
 import { ReviewStep } from "@/components/registration/steps/ReviewStep";
 import { EMPTY_FORM, STEPS, type RegistrationForm } from "@/types/registration";
+import { useDemoData } from "@/context/DemoDataContext";
 
 type Action = { type: "patch"; patch: Partial<RegistrationForm> };
 function reducer(state: RegistrationForm, action: Action): RegistrationForm {
@@ -26,6 +27,7 @@ export function PatientRegistrationPage() {
   useDocumentTitle("تسجيل مريض جديد");
   const navigate = useNavigate();
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
+  const { addRequest } = useDemoData();
   const [form, dispatch] = useReducer(reducer, EMPTY_FORM);
   const [stepIndex, setStepIndex] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -71,6 +73,18 @@ export function PatientRegistrationPage() {
     if (!validateStep()) return;
     setSubmitting(true);
     setTimeout(() => {
+      addRequest({
+        fullName: form.fullName,
+        username: form.username,
+        birthDate: form.birthDate,
+        gender: form.gender,
+        hasCaregiver: form.hasCaregiver,
+        caregiverName: form.caregiverName,
+        caregiverRelation: form.caregiverRelation,
+        phone: form.phone || undefined,
+        email: form.email || undefined,
+        consent: form.consent,
+      });
       setSubmitting(false);
       navigate("/pending-activation");
     }, 600);
@@ -80,69 +94,30 @@ export function PatientRegistrationPage() {
 
   let stepBody: ReactNode = null;
   switch (STEPS[stepIndex].key) {
-    case "account":
-      stepBody = <AccountStep form={form} update={update} errors={errors} />;
-      break;
-    case "personal":
-      stepBody = <PersonalStep form={form} update={update} errors={errors} />;
-      break;
-    case "caregiver":
-      stepBody = <CaregiverStep form={form} update={update} errors={errors} />;
-      break;
-    case "contact":
-      stepBody = <ContactStep form={form} update={update} errors={errors} />;
-      break;
-    case "consent":
-      stepBody = <ConsentStep form={form} update={update} errors={errors} />;
-      break;
-    case "review":
-      stepBody = <ReviewStep form={form} />;
-      break;
+    case "account": stepBody = <AccountStep form={form} update={update} errors={errors} />; break;
+    case "personal": stepBody = <PersonalStep form={form} update={update} errors={errors} />; break;
+    case "caregiver": stepBody = <CaregiverStep form={form} update={update} errors={errors} />; break;
+    case "contact": stepBody = <ContactStep form={form} update={update} errors={errors} />; break;
+    case "consent": stepBody = <ConsentStep form={form} update={update} errors={errors} />; break;
+    case "review": stepBody = <ReviewStep form={form} />; break;
   }
 
   return (
     <PageContainer className="py-10">
       <PageHeader title="تسجيل مريض جديد" subtitle="لن يُطلب منك أي معلومة طبية في هذا النموذج" />
-      <h2 ref={headingRef} className="sr-only">
-        نموذج التسجيل
-      </h2>
+      <h2 ref={headingRef} className="sr-only">نموذج التسجيل</h2>
 
-      <div className="mb-6">
-        <RegistrationStepper currentIndex={stepIndex} />
-      </div>
+      <div className="mb-6"><RegistrationStepper currentIndex={stepIndex} /></div>
 
       <Card>
-        {Object.values(errors).length > 0 && (
-          <FormErrorSummary errors={Object.values(errors)} className="mb-4" />
-        )}
-
+        {Object.values(errors).length > 0 && <FormErrorSummary errors={Object.values(errors)} className="mb-4" />}
         {stepBody}
-
         <div className="mt-8 flex items-center justify-between gap-3">
-          <Button
-            variant="ghost"
-            onClick={back}
-            disabled={stepIndex === 0 || submitting}
-            leftIcon={<ArrowRight className="h-5 w-5" aria-hidden="true" />}
-          >
-            السابق
-          </Button>
-
+          <Button variant="ghost" onClick={back} disabled={stepIndex === 0 || submitting} leftIcon={<ArrowRight className="h-5 w-5" aria-hidden="true" />}>السابق</Button>
           {!isLast ? (
-            <Button
-              onClick={next}
-              rightIcon={<ArrowLeft className="h-5 w-5" aria-hidden="true" />}
-            >
-              التالي
-            </Button>
+            <Button onClick={next} rightIcon={<ArrowLeft className="h-5 w-5" aria-hidden="true" />}>التالي</Button>
           ) : (
-            <Button
-              onClick={submit}
-              loading={submitting}
-              leftIcon={<Send className="h-5 w-5" aria-hidden="true" />}
-            >
-              إرسال الطلب
-            </Button>
+            <Button onClick={submit} loading={submitting} leftIcon={<Send className="h-5 w-5" aria-hidden="true" />}>إرسال الطلب</Button>
           )}
         </div>
       </Card>

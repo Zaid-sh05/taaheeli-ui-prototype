@@ -1,13 +1,14 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import * as Icons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ROLE_LIST } from "@/config/roles";
 import type { RoleKey } from "@/config/roles";
-import { useRole } from "@/context/RoleContext";
+import { useSession } from "@/context/SessionContext";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useFocusOnMount } from "@/hooks/useFocusOnMount";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { Alert } from "@/components/ui/Alert";
 import { cn } from "@/lib/cn";
 
 const accentClasses: Record<string, string> = {
@@ -29,11 +30,14 @@ const iconColor: Record<string, string> = {
 export function RoleSelectionPage() {
   useDocumentTitle("اختيار الدور");
   const navigate = useNavigate();
-  const { setRole } = useRole();
+  const location = useLocation();
+  const { setSelectedRole } = useSession();
   const headingRef = useFocusOnMount<HTMLHeadingElement>();
 
+  const message = (location.state as { message?: string } | null)?.message;
+
   function selectRole(key: RoleKey) {
-    setRole(key);
+    setSelectedRole(key);
     navigate("/login");
   }
 
@@ -46,6 +50,12 @@ export function RoleSelectionPage() {
       <h2 ref={headingRef} className="sr-only">
         اختيار الدور
       </h2>
+
+      {message && (
+        <Alert tone="warning" className="mb-6">
+          {message}
+        </Alert>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         {ROLE_LIST.map((role) => {

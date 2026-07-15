@@ -1,16 +1,22 @@
 import { BrowserRouter } from "react-router-dom";
-import { RoleProvider } from "@/context/RoleContext";
+import { SessionProvider } from "@/context/SessionContext";
+import { DemoDataProvider } from "@/context/DemoDataContext";
 import { TextSizeModeProvider } from "@/context/TextSizeModeContext";
+import { ToastProvider } from "@/context/ToastContext";
 import { AppRouter } from "@/router";
 
 export function App() {
   return (
     <TextSizeModeProvider>
-      <RoleProvider>
-        <BrowserRouter>
-          <AppRouter />
-        </BrowserRouter>
-      </RoleProvider>
+      <DemoDataProvider>
+        <SessionProvider>
+          <ToastProvider>
+            <BrowserRouter>
+              <AppRouter />
+            </BrowserRouter>
+          </ToastProvider>
+        </SessionProvider>
+      </DemoDataProvider>
     </TextSizeModeProvider>
   );
 }

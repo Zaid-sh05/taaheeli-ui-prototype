@@ -1,6 +1,7 @@
 import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { useRole } from "@/context/RoleContext";
+import { useSession } from "@/context/SessionContext";
+import { ROLES } from "@/config/roles";
 import type { Audience } from "@/config/roles";
 
 interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
@@ -17,8 +18,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
   { label, audience, className, id, ...props },
   ref,
 ) {
-  const roleCtx = useRole();
-  const effectiveAudience: Audience = audience ?? roleCtx.audience ?? "staff";
+  const { session, selectedRole } = useSession();
+  const role = session?.role ?? selectedRole ?? "manager";
+  const effectiveAudience: Audience = audience ?? ROLES[role]?.audience ?? "staff";
 
   return (
     <label className="flex items-start gap-3 cursor-pointer">
@@ -26,11 +28,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
         ref={ref}
         type="checkbox"
         id={id}
-        className={cn(
-          "mt-1 rounded border-2 border-neutral-300 text-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600",
-          audienceMinTarget[effectiveAudience],
-          className,
-        )}
+        className={cn("mt-1 rounded border-2 border-neutral-300 text-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600", audienceMinTarget[effectiveAudience], className)}
         {...props}
       />
       <span className="text-base text-ink leading-relaxed">{label}</span>

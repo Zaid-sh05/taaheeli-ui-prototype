@@ -1,0 +1,105 @@
+import { NavLink } from "react-router-dom";
+import { useDemoData } from "@/context/DemoDataContext";
+import { cn } from "@/lib/cn";
+import * as Icons from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { RoleKey } from "@/config/roles";
+import { useMemo } from "react";
+
+interface NavItem {
+  to: string;
+  label: string;
+  icon: string;
+  badgeCount?: number;
+}
+
+const NAV_CONFIG: Record<RoleKey, NavItem[]> = {
+  manager: [
+    { to: "/manager", label: "نظرة عامة", icon: "LayoutDashboard" },
+    { to: "/manager/requests", label: "طلبات التفعيل", icon: "UserPlus" },
+    { to: "/manager/patients", label: "المستفيدون", icon: "Users" },
+    { to: "/manager/employees", label: "الموظفون", icon: "Briefcase" },
+    { to: "/manager/reports", label: "التقارير", icon: "BarChart3" },
+    { to: "/manager/notifications", label: "التنبيهات", icon: "Bell" },
+  ],
+  doctor: [
+    { to: "/therapist", label: "مرضاي", icon: "Users" },
+    { to: "/therapist/plans", label: "الخطط العلاجية", icon: "ClipboardList" },
+    { to: "/therapist/appointments", label: "المواعيد", icon: "CalendarDays" },
+    { to: "/therapist/notifications", label: "التنبيهات", icon: "Bell" },
+  ],
+  admin: [
+    { to: "/admin", label: "التسجيلات", icon: "UserPlus" },
+    { to: "/admin/appointments", label: "المواعيد", icon: "CalendarDays" },
+    { to: "/admin/notifications", label: "التنبيهات", icon: "Bell" },
+  ],
+  parent: [
+    { to: "/family", label: "نظرة عامة", icon: "TrendingUp" },
+    { to: "/family/appointments", label: "المواعيد", icon: "CalendarDays" },
+    { to: "/family/messages", label: "التواصل", icon: "MessageSquare" },
+  ],
+  patient: [
+    { to: "/patient", label: "برنامجي", icon: "HeartPulse" },
+    { to: "/patient/appointments", label: "مواعيدي", icon: "CalendarDays" },
+    { to: "/patient/exercises", label: "تماريني", icon: "Dumbbell" },
+  ],
+};
+
+export function RoleNav({ role }: { role: RoleKey }) {
+  const { data } = useDemoData();
+
+  const pendingCount = useMemo(
+    () => data.requests.filter((r) => r.status === "pending").length,
+    [data.requests],
+  );
+
+  const unreadNotifCount = useMemo(
+    () => data.notifications.filter((n) => !n.read).length,
+    [data.notifications],
+  );
+
+  const items = NAV_CONFIG[role] ?? [];
+
+  function getBadge(item: NavItem): number | undefined {
+    if (role === "manager" && item.to === "/manager/requests") return pendingCount;
+    if (role === "manager" && item.to === "/manager/notifications") return unreadNotifCount;
+    if (item.to.includes("notifications")) return unreadNotifCount;
+    return undefined;
+  }
+
+  return (
+    <nav aria-label="القائمة الرئيسية" className="border-b border-neutral-100 bg-white">
+      <ul className="mx-auto max-w-5xl px-4 sm:px-6 flex gap-1 overflow-x-auto py-2">
+        {items.map((item) => {
+          const Icon = (Icons as unknown as Record<string, LucideIcon>)[item.icon] ?? Icons.Circle;
+          const badge = getBadge(item);
+          return (
+            <li key={item.to}>
+              <NavLink
+                to={item.to}
+                end={item.to === "/manager" || item.to === "/therapist" || item.to === "/admin" || item.to === "/patient" || item.to === "/family"}
+                className={({ isActive }) =>
+                  cn(
+                    "inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-base font-semibold text-neutral-700 hover:bg-primary-50 hover:text-primary-700 transition-colors min-h-[48px] whitespace-nowrap",
+                    isActive && "bg-primary-50 text-primary-700 underline underline-offset-4 decoration-2",
+                  )
+                }
+              >
+                <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <span>{item.label}</span>
+                {badge !== undefined && badge > 0 && (
+                  <span
+                    className="inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded-full bg-accent-500 text-white text-sm font-bold"
+                    aria-label={`${badge} طلبات بانتظار التفعيل`}
+                  >
+                    {badge}
+                  </span>
+                )}
+              </NavLink>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}

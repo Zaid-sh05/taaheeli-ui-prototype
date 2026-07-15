@@ -1,6 +1,7 @@
 import { forwardRef, type SelectHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
-import { useRole } from "@/context/RoleContext";
+import { useSession } from "@/context/SessionContext";
+import { ROLES } from "@/config/roles";
 import type { Audience } from "@/config/roles";
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
@@ -17,8 +18,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   { hasError, audience, className, children, ...props },
   ref,
 ) {
-  const roleCtx = useRole();
-  const effectiveAudience: Audience = audience ?? roleCtx.audience ?? "staff";
+  const { session, selectedRole } = useSession();
+  const role = session?.role ?? selectedRole ?? "manager";
+  const effectiveAudience: Audience = audience ?? ROLES[role]?.audience ?? "staff";
 
   return (
     <select

@@ -16,22 +16,16 @@ export function PendingActivationPage() {
   return (
     <PageContainer className="py-10">
       <PageHeader title="حسابك قيد التفعيل" />
-      <h2 ref={headingRef} className="sr-only">
-        حالة تفعيل الحساب
-      </h2>
+      <h2 ref={headingRef} className="sr-only">حالة تفعيل الحساب</h2>
 
       <Card>
         <Alert tone="pending" title="تم استلام طلبك بنجاح">
-          شكراً لتسجيلك. سيقوم فريق المركز بمراجعة طلبك وتفعيل حسابك في أقرب وقت. ستتمكن من
-          تسجيل الدخول بمجرد تفعيل الحساب.
+          شكراً لتسجيلك. سيقوم فريق المركز بمراجعة طلبك وتفعيل حسابك في أقرب وقت. ستتمكن من تسجيل الدخول بمجرد تفعيل الحساب.
         </Alert>
 
         <div className="mt-6 flex items-start gap-3 text-base text-neutral-700">
           <Clock className="h-5 w-5 mt-1 text-secondary-600 shrink-0" aria-hidden="true" />
-          <p className="leading-relaxed">
-            عادةً تستغرق عملية المراجعة من يوم إلى ثلاثة أيام عمل. إذا مرّت أكثر من خمسة أيام
-            ولم يُفعَّل حسابك، يرجى التواصل مع المركز.
-          </p>
+          <p className="leading-relaxed">عادةً تستغرق عملية المراجعة من يوم إلى ثلاثة أيام عمل. إذا مرّت أكثر من خمسة أيام ولم يُفعَّل حسابك، يرجى التواصل مع المركز.</p>
         </div>
 
         <div className="mt-6 rounded-lg bg-neutral-50 border border-neutral-100 p-4">
@@ -41,12 +35,8 @@ export function PendingActivationPage() {
         </div>
 
         <div className="mt-6 flex flex-col gap-3">
-          <Button variant="secondary" onClick={() => navigate("/login")} rightIcon={<ArrowRight className="h-5 w-5" aria-hidden="true" />}>
-            العودة لتسجيل الدخول
-          </Button>
-          <Link to="/" className="text-center text-base font-semibold text-primary-700 hover:underline">
-            العودة لاختيار الدور
-          </Link>
+          <Button variant="secondary" onClick={() => navigate("/login")} rightIcon={<ArrowRight className="h-5 w-5" aria-hidden="true" />}>العودة لتسجيل الدخول</Button>
+          <Link to="/" className="text-center text-base font-semibold text-primary-700 hover:underline">العودة لاختيار الدور</Link>
         </div>
       </Card>
     </PageContainer>
