@@ -8,9 +8,12 @@ import type {
   TreatmentPlan,
   Exercise,
   AppNotification,
+  DemoDocument,
+  Conversation,
+  CompanionMessage,
 } from "@/types/demo";
 
-const SEED_VERSION = 1;
+const SEED_VERSION = 2;
 
 function isoDate(daysFromNow: number): string {
   const d = new Date();
@@ -55,56 +58,107 @@ const requests: RegistrationRequest[] = [
 ];
 
 const appointments: Appointment[] = [
-  { id: "a1", patientId: "p3", employeeId: "e2", date: isoDate(0), time: "09:00", type: "علاج طبيعي", status: "completed" },
-  { id: "a2", patientId: "p7", employeeId: "e2", date: isoDate(0), time: "10:00", type: "علاج طبيعي", status: "completed" },
-  { id: "a3", patientId: "p1", employeeId: "e2", date: isoDate(0), time: "11:00", type: "متابعة", status: "scheduled" },
-  { id: "a4", patientId: "p4", employeeId: "e4", date: isoDate(0), time: "12:00", type: "علاج نطق", status: "scheduled" },
-  { id: "a5", patientId: "p10", employeeId: "e1", date: isoDate(0), time: "13:00", type: "تقييم", status: "scheduled" },
-  { id: "a6", patientId: "p2", employeeId: "e3", date: isoDate(1), time: "09:00", type: "علاج وظيفي", status: "scheduled" },
-  { id: "a7", patientId: "p6", employeeId: "e3", date: isoDate(1), time: "10:00", type: "علاج وظيفي", status: "scheduled" },
-  { id: "a8", patientId: "p1", employeeId: "e2", date: isoDate(2), time: "09:00", type: "علاج طبيعي", status: "scheduled" },
-  { id: "a9", patientId: "p3", employeeId: "e2", date: isoDate(3), time: "11:00", type: "علاج طبيعي", status: "scheduled" },
-  { id: "a10", patientId: "p5", employeeId: "e1", date: isoDate(5), time: "14:00", type: "متابعة", status: "scheduled" },
-  { id: "a11", patientId: "p9", employeeId: "e4", date: isoDate(4), time: "10:00", type: "علاج نطق", status: "scheduled" },
-  { id: "a12", patientId: "p4", employeeId: "e4", date: isoDate(-1), time: "09:00", type: "علاج نطق", status: "missed" },
+  { id: "a1", patientId: "p3", employeeId: "e2", date: isoDate(0), time: "09:00", durationMin: 45, type: "علاج طبيعي", channel: "in-person", status: "completed" },
+  { id: "a2", patientId: "p7", employeeId: "e2", date: isoDate(0), time: "10:00", durationMin: 40, type: "علاج طبيعي", channel: "in-person", status: "completed" },
+  { id: "a3", patientId: "p1", employeeId: "e2", date: isoDate(0), time: "11:00", durationMin: 45, type: "متابعة", channel: "in-person", status: "scheduled" },
+  { id: "a4", patientId: "p4", employeeId: "e4", date: isoDate(0), time: "12:00", durationMin: 30, type: "علاج نطق", channel: "video", status: "scheduled" },
+  { id: "a5", patientId: "p10", employeeId: "e1", date: isoDate(0), time: "13:00", durationMin: 45, type: "تقييم", channel: "in-person", status: "scheduled" },
+  { id: "a6", patientId: "p2", employeeId: "e3", date: isoDate(1), time: "09:00", durationMin: 35, type: "علاج وظيفي", channel: "in-person", status: "scheduled" },
+  { id: "a7", patientId: "p6", employeeId: "e3", date: isoDate(1), time: "10:00", durationMin: 40, type: "علاج وظيفي", channel: "video", status: "scheduled" },
+  { id: "a8", patientId: "p1", employeeId: "e2", date: isoDate(2), time: "09:00", durationMin: 45, type: "علاج طبيعي", channel: "in-person", status: "scheduled" },
+  { id: "a9", patientId: "p3", employeeId: "e2", date: isoDate(3), time: "11:00", durationMin: 45, type: "علاج طبيعي", channel: "in-person", status: "scheduled" },
+  { id: "a10", patientId: "p5", employeeId: "e1", date: isoDate(5), time: "14:00", durationMin: 45, type: "متابعة", channel: "video", status: "scheduled" },
+  { id: "a11", patientId: "p9", employeeId: "e4", date: isoDate(4), time: "10:00", durationMin: 30, type: "علاج نطق", channel: "in-person", status: "scheduled" },
+  { id: "a12", patientId: "p4", employeeId: "e4", date: isoDate(-1), time: "09:00", durationMin: 30, type: "علاج نطق", channel: "in-person", status: "missed" },
 ];
 
 const sessions: RehabSession[] = [
-  { id: "s1", patientId: "p3", employeeId: "e2", date: isoDate(0), durationMin: 45, type: "علاج طبيعي", notes: "تحسن ملحوظ في مدى الحركة", attendance: "attended" },
-  { id: "s2", patientId: "p7", employeeId: "e2", date: isoDate(0), durationMin: 40, type: "علاج طبيعي", notes: "تمارين تقوية العضلات", attendance: "attended" },
-  { id: "s3", patientId: "p1", employeeId: "e2", date: isoDate(-1), durationMin: 50, type: "علاج طبيعي", notes: "جلسة متابعة", attendance: "attended" },
-  { id: "s4", patientId: "p2", employeeId: "e3", date: isoDate(-2), durationMin: 35, type: "علاج وظيفي", notes: "تمارين الحياة اليومية", attendance: "attended" },
-  { id: "s5", patientId: "p4", employeeId: "e4", date: isoDate(-3), durationMin: 30, type: "علاج نطق", notes: "تمارين النطق", attendance: "attended" },
-  { id: "s6", patientId: "p5", employeeId: "e1", date: isoDate(-1), durationMin: 45, type: "تقييم", notes: "تقييم شهري", attendance: "attended" },
-  { id: "s7", patientId: "p6", employeeId: "e3", date: isoDate(-1), durationMin: 40, type: "علاج وظيفي", notes: "تحسن في المهارات الحركية الدقيقة", attendance: "attended" },
-  { id: "s8", patientId: "p9", employeeId: "e4", date: isoDate(-2), durationMin: 30, type: "علاج نطق", notes: "تمارين المخاطبة", attendance: "late" },
-  { id: "s9", patientId: "p4", employeeId: "e4", date: isoDate(-1), durationMin: 30, type: "علاج نطق", notes: "لم يحضر المريض", attendance: "missed" },
-  { id: "s10", patientId: "p10", employeeId: "e1", date: isoDate(-1), durationMin: 45, type: "تقييم", notes: "تقييم أولي", attendance: "attended" },
+  { id: "s1", patientId: "p3", employeeId: "e2", date: isoDate(0), durationMin: 45, type: "علاج طبيعي", notes: "تحسن ملحوظ في مدى الحركة", attendance: "attended", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "الاستمرار على نفس التمارين مع زيادة التكرار", followUpDate: isoDate(3), status: "completed" },
+  { id: "s2", patientId: "p7", employeeId: "e2", date: isoDate(0), durationMin: 40, type: "علاج طبيعي", notes: "تمارين تقوية العضلات", attendance: "attended", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "إضافة تمارين توازن جديدة", followUpDate: isoDate(2), status: "completed" },
+  { id: "s3", patientId: "p1", employeeId: "e2", date: isoDate(-1), durationMin: 50, type: "علاج طبيعي", notes: "جلسة متابعة", attendance: "attended", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "متابعة التمارين المنزلية", followUpDate: isoDate(2), status: "completed" },
+  { id: "s4", patientId: "p2", employeeId: "e3", date: isoDate(-2), durationMin: 35, type: "علاج وظيفي", notes: "تمارين الحياة اليومية", attendance: "attended", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "التركيز على الاستقلالية في الأكل", followUpDate: isoDate(1), status: "completed" },
+  { id: "s5", patientId: "p4", employeeId: "e4", date: isoDate(-3), durationMin: 30, type: "علاج نطق", notes: "تمارين النطق", attendance: "attended", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "تمارين المخاطبة في المنزل", followUpDate: isoDate(0), status: "completed" },
+  { id: "s6", patientId: "p5", employeeId: "e1", date: isoDate(-1), durationMin: 45, type: "تقييم", notes: "تقييم شهري", attendance: "attended", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "الاستمرار على الخطة الحالية", followUpDate: isoDate(5), status: "completed" },
+  { id: "s7", patientId: "p6", employeeId: "e3", date: isoDate(-1), durationMin: 40, type: "علاج وظيفي", notes: "تحسن في المهارات الحركية الدقيقة", attendance: "attended", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "تمارين الكتابة في المنزل", followUpDate: isoDate(1), status: "completed" },
+  { id: "s8", patientId: "p9", employeeId: "e4", date: isoDate(-2), durationMin: 30, type: "علاج نطق", notes: "تمارين المخاطبة", attendance: "late", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "زيادة التكرار في المنزل", followUpDate: isoDate(4), status: "completed" },
+  { id: "s9", patientId: "p4", employeeId: "e4", date: isoDate(-1), durationMin: 30, type: "علاج نطق", notes: "لم يحضر المريض", attendance: "missed", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "إعادة جدولة الموعد", followUpDate: null, status: "completed" },
+  { id: "s10", patientId: "p10", employeeId: "e1", date: isoDate(-1), durationMin: 45, type: "تقييم", notes: "تقييم أولي", attendance: "attended", completedExerciseIds: [], goalProgressUpdates: [], nextRecommendations: "بدء خطة علاج طبيعي", followUpDate: isoDate(0), status: "completed" },
 ];
 
 const treatmentPlans: TreatmentPlan[] = [
-  { id: "tp1", patientId: "p1", employeeId: "e2", title: "خطة علاج طبيعي - المرحلة الثانية", startDate: isoDate(-60), endDate: isoDate(30), goals: ["زيادة مدى الحركة في الكتف", "تقوية عضلات الذراع"], progress: 65, status: "active" },
-  { id: "tp2", patientId: "p2", employeeId: "e3", title: "خطة علاج وظيفي", startDate: isoDate(-45), endDate: isoDate(45), goals: ["تحسين مهارات الحياة اليومية", "زيادة الاستقلالية"], progress: 40, status: "active" },
-  { id: "tp3", patientId: "p3", employeeId: "e2", title: "خطة علاج طبيعي - المرحلة الأولى", startDate: isoDate(-120), endDate: isoDate(-10), goals: ["استعادة المشي", "تقوية الأطراف السفلية"], progress: 80, status: "completed" },
-  { id: "tp4", patientId: "p5", employeeId: "e1", title: "خطة تأهيل شاملة", startDate: isoDate(-90), endDate: null, goals: ["تحسين التوازن", "زيادة القدرة على التحمل"], progress: 90, status: "active" },
-  { id: "tp5", patientId: "p4", employeeId: "e4", title: "خطة علاج النطق", startDate: isoDate(-30), endDate: isoDate(60), goals: ["تحسين وضوح النطق", "زيادة المفردات"], progress: 25, status: "active" },
+  { id: "tp1", patientId: "p1", employeeId: "e2", title: "خطة علاج طبيعي - المرحلة الثانية", startDate: isoDate(-60), endDate: isoDate(30), reviewDate: isoDate(7), goals: [{ id: "tp1g1", text: "زيادة مدى الحركة في الكتف", progress: 70 }, { id: "tp1g2", text: "تقوية عضلات الذراع", progress: 60 }], sessionFrequency: "٣ جلسات أسبوعياً", notes: "المريض متجاوب ويستجيب جيداً للعلاج", progress: 65, status: "active" },
+  { id: "tp2", patientId: "p2", employeeId: "e3", title: "خطة علاج وظيفي", startDate: isoDate(-45), endDate: isoDate(45), reviewDate: isoDate(14), goals: [{ id: "tp2g1", text: "تحسين مهارات الحياة اليومية", progress: 45 }, { id: "tp2g2", text: "زيادة الاستقلالية", progress: 35 }], sessionFrequency: "مرتان أسبوعياً", notes: "تحسن تدريجي في المهارات", progress: 40, status: "active" },
+  { id: "tp3", patientId: "p3", employeeId: "e2", title: "خطة علاج طبيعي - المرحلة الأولى", startDate: isoDate(-120), endDate: isoDate(-10), reviewDate: null, goals: [{ id: "tp3g1", text: "استعادة المشي", progress: 85 }, { id: "tp3g2", text: "تقوية الأطراف السفلية", progress: 75 }], sessionFrequency: "٣ جلسات أسبوعياً", notes: "اكتملت المرحلة الأولى بنجاح", progress: 80, status: "completed" },
+  { id: "tp4", patientId: "p5", employeeId: "e1", title: "خطة تأهيل شاملة", startDate: isoDate(-90), endDate: null, reviewDate: isoDate(10), goals: [{ id: "tp4g1", text: "تحسين التوازن", progress: 90 }, { id: "tp4g2", text: "زيادة القدرة على التحمل", progress: 90 }], sessionFrequency: "٤ جلسات أسبوعياً", notes: "تقدم ممتاز", progress: 90, status: "active" },
+  { id: "tp5", patientId: "p4", employeeId: "e4", title: "خطة علاج النطق", startDate: isoDate(-30), endDate: isoDate(60), reviewDate: isoDate(21), goals: [{ id: "tp5g1", text: "تحسين وضوح النطق", progress: 25 }, { id: "tp5g2", text: "زيادة المفردات", progress: 25 }], sessionFrequency: "مرتان أسبوعياً", notes: "بداية العلاج", progress: 25, status: "active" },
+  { id: "tp6", patientId: "p7", employeeId: "e2", title: "خطة تقوية العضلات", startDate: isoDate(-30), endDate: isoDate(60), reviewDate: isoDate(14), goals: [{ id: "tp6g1", text: "تقوية عضلات الظهر", progress: 65 }, { id: "tp6g2", text: "تحسين وضعية الجسم", progress: 75 }], sessionFrequency: "٣ جلسات أسبوعياً", notes: "تحسن جيد", progress: 70, status: "active" },
+  { id: "tp7", patientId: "p6", employeeId: "e3", title: "خطة المهارات الحركية الدقيقة", startDate: isoDate(-20), endDate: isoDate(40), reviewDate: isoDate(10), goals: [{ id: "tp7g1", text: "تحسين مهارات الكتابة", progress: 50 }, { id: "tp7g2", text: "تحسين استخدام الأدوات", progress: 60 }], sessionFrequency: "مرتان أسبوعياً", notes: "تحسن مستمر", progress: 55, status: "active" },
+  { id: "tp8", patientId: "p9", employeeId: "e4", title: "خطة تحسين المخاطبة", startDate: isoDate(-15), endDate: isoDate(45), reviewDate: isoDate(7), goals: [{ id: "tp8g1", text: "تحسين طلاقة الكلام", progress: 45 }, { id: "tp8g2", text: "تقليل التردد في الكلام", progress: 55 }], sessionFrequency: "مرتان أسبوعياً", notes: "استجابة جيدة", progress: 50, status: "active" },
 ];
 
 const exercises: Exercise[] = [
-  { id: "ex1", patientId: "p1", title: "تمارين مدى الحركة - الكتف", description: "تحريك الكتف في دوائر بطيئة ١٠ مرات", frequency: "٣ مرات يومياً", status: "active" },
-  { id: "ex2", patientId: "p1", title: "تمرين تقوية الذراع", description: "استخدام شريط مطاطي للضغط ١٥ مرة", frequency: "مرتان يومياً", status: "active" },
-  { id: "ex3", patientId: "p2", title: "تمارين الحياة اليومية", description: "تمارين ارتداء الملابس واستخدام الأدوات", frequency: "مرة يومياً", status: "active" },
-  { id: "ex4", patientId: "p4", title: "تمارين النطق - المقاطع", description: "تكرار مقاطع صوتية محددة ٢٠ مرة", frequency: "مرتان يومياً", status: "active" },
-  { id: "ex5", patientId: "p5", title: "تمارين التوازن", description: "الوقوف على قدم واحدة ٣٠ ثانية", frequency: "٣ مرات يومياً", status: "active" },
+  { id: "ex1", patientId: "p1", title: "تمارين مدى الحركة - الكتف", description: "تحريك الكتف في دوائر بطيئة ١٠ مرات", frequency: "٣ مرات يومياً", safetyNote: "توقف إذا شعرت بألم حاد", status: "active" },
+  { id: "ex2", patientId: "p1", title: "تمرين تقوية الذراع", description: "استخدام شريط مطاطي للضغط ١٥ مرة", frequency: "مرتان يومياً", safetyNote: "حافظ على استقامة الظهر", status: "active" },
+  { id: "ex3", patientId: "p2", title: "تمارين الحياة اليومية", description: "تمارين ارتداء الملابس واستخدام الأدوات", frequency: "مرة يومياً", safetyNote: "استخدم أدوات آمنة فقط", status: "active" },
+  { id: "ex4", patientId: "p4", title: "تمارين النطق - المقاطع", description: "تكرار مقاطع صوتية محددة ٢٠ مرة", frequency: "مرتان يومياً", safetyNote: "رتّب وقتاً هادئاً للتمرين", status: "active" },
+  { id: "ex5", patientId: "p5", title: "تمارين التوازن", description: "الوقوف على قدم واحدة ٣٠ ثانية", frequency: "٣ مرات يومياً", safetyNote: "استند على كرسي ثابت للحماية", status: "active" },
+  { id: "ex6", patientId: "p3", title: "تمارين المشي", description: "المشي ١٠ دقائق بوتيرة متوسطة", frequency: "مرة يومياً", safetyNote: "ارتدِ حذاء مريح", status: "active" },
+  { id: "ex7", patientId: "p7", title: "تمارين تقوية الظهر", description: "تمرين القطة والجمل ١٥ مرة", frequency: "مرتان يومياً", safetyNote: "حافظ على تنفس منتظم", status: "active" },
+  { id: "ex8", patientId: "p6", title: "تمارين الكتابة", description: "تتبع خطوط منقطة ١٠ مرات", frequency: "مرة يومياً", safetyNote: "استخدم قلم مريح", status: "active" },
 ];
 
 const notifications: AppNotification[] = [
-  { id: "n1", type: "registration", title: "طلب تسجيل جديد", message: "وصل طلب تسجيل جديد من نورة القحطاني", createdAt: isoDateTime(-2, 5), read: false, link: "/manager/requests/r1" },
-  { id: "n2", type: "registration", title: "طلب تسجيل جديد", message: "وصل طلب تسجيل جديد من بدر الشمري", createdAt: isoDateTime(-1, 2), read: false, link: "/manager/requests/r2" },
-  { id: "n3", type: "missed-appointment", title: "موعد فائت", message: "لم يحضر المريض لمى المطيري موعد علاج النطق أمس", createdAt: isoDateTime(-1, 12), read: false, link: "/manager/patients/p4" },
-  { id: "n4", type: "incomplete-file", title: "ملف غير مكتمل", message: "ملف المريضة هند البقمي ينقصه تقرير التقييم الأخير", createdAt: isoDateTime(-3, 8), read: false, link: "/manager/patients/p8" },
-  { id: "n5", type: "report-review", title: "تقرير بانتظار المراجعة", message: "تقرير الحضور الأسبوعي بانتظار مراجعتك", createdAt: isoDateTime(-4, 10), read: true, link: "/manager/reports" },
-  { id: "n6", type: "attendance-change", title: "تغير في معدل الحضور", message: "انخفض معدل الحضور بنسبة ١٠٪ هذا الأسبوع", createdAt: isoDateTime(-5, 6), read: true, link: "/manager/reports" },
+  { id: "n1", type: "registration", title: "طلب تسجيل جديد", message: "وصل طلب تسجيل جديد من نورة القحطاني", createdAt: isoDateTime(-2, 5), read: false, link: "/manager/requests/r1", targetRole: "manager" },
+  { id: "n2", type: "registration", title: "طلب تسجيل جديد", message: "وصل طلب تسجيل جديد من بدر الشمري", createdAt: isoDateTime(-1, 2), read: false, link: "/manager/requests/r2", targetRole: "manager" },
+  { id: "n3", type: "missed-appointment", title: "موعد فائت", message: "لم يحضر المريض ريم الشهري موعد علاج النطق أمس", createdAt: isoDateTime(-1, 12), read: false, link: "/manager/patients/p4", targetRole: "manager" },
+  { id: "n4", type: "incomplete-file", title: "ملف غير مكتمل", message: "ملف المريضة لمى المطيري ينقصه تقرير التقييم الأخير", createdAt: isoDateTime(-3, 8), read: false, link: "/manager/patients/p8", targetRole: "manager" },
+  { id: "n5", type: "report-review", title: "تقرير بانتظار المراجعة", message: "تقرير الحضور الأسبوعي بانتظار مراجعتك", createdAt: isoDateTime(-4, 10), read: true, link: "/manager/reports", targetRole: "manager" },
+  { id: "n6", type: "attendance-change", title: "تغير في معدل الحضور", message: "انخفض معدل الحضور بنسبة ١٠٪ هذا الأسبوع", createdAt: isoDateTime(-5, 6), read: true, link: "/manager/reports", targetRole: "manager" },
+  // Therapist notifications
+  { id: "n7", type: "plan-review", title: "تذكير مراجعة خطة", message: "خطة علاج طبيعي - المرحلة الثانية لمحمد العتيبي بحاجة لمراجعة خلال أسبوع", createdAt: isoDateTime(-1, 3), read: false, link: "/therapist/plans/tp1", targetRole: "doctor" },
+  { id: "n8", type: "patient-followup", title: "تنبيه متابعة مريض", message: "ريم الشهري تحتاج متابعة بعد موعد فائت", createdAt: isoDateTime(-1, 10), read: false, link: "/therapist/patients/p4", targetRole: "doctor" },
+  { id: "n9", type: "appointment-change", title: "تغيير في موعد", message: "تمت إعادة جدولة موعد عبدالرحمن السبيعي", createdAt: isoDateTime(-2, 4), read: false, link: "/therapist/appointments", targetRole: "doctor" },
+  // Admin notifications
+  { id: "n10", type: "registration", title: "تسجيل جديد", message: "طلب تسجيل جديد من نورة القحطاني بحاجة لاستكمال البيانات", createdAt: isoDateTime(-2, 5), read: false, link: "/admin/registrations", targetRole: "admin" },
+  { id: "n11", type: "missing-info", title: "معلومات ناقصة", message: "طلب بدر الشمري ينقصه رقم الهاتف", createdAt: isoDateTime(-1, 2), read: false, link: "/admin/registrations", targetRole: "admin" },
+  { id: "n12", type: "document-reminder", title: "تذكير مستند", message: "ملف جواهر الحربي ينقصه نسخة الهوية", createdAt: isoDateTime(-3, 6), read: false, link: "/admin/documents", targetRole: "admin" },
+  { id: "n13", type: "appointment-change", title: "إلغاء موعد", message: "تم إلغاء موعد لمى المطيري", createdAt: isoDateTime(-1, 8), read: true, link: "/admin/appointments", targetRole: "admin" },
+];
+
+const documents: DemoDocument[] = [
+  { id: "d1", patientId: "p1", title: "نسخة الهوية", category: "identity", status: "received", uploadedAt: isoDate(-120), notes: "نسخة واضحة" },
+  { id: "d2", patientId: "p1", title: "موافقة العلاج", category: "consent", status: "received", uploadedAt: isoDate(-120), notes: "موقعة" },
+  { id: "d3", patientId: "p1", title: "تقرير طبي", category: "medical-report", status: "reviewed", uploadedAt: isoDate(-60), notes: "تقريم شامل" },
+  { id: "d4", patientId: "p2", title: "نسخة الهوية", category: "identity", status: "received", uploadedAt: isoDate(-90), notes: "" },
+  { id: "d5", patientId: "p2", title: "تحويل طبي", category: "referral", status: "missing", uploadedAt: null, notes: "لم يُستلم بعد" },
+  { id: "d6", patientId: "p4", title: "نسخة الهوية", category: "identity", status: "missing", uploadedAt: null, notes: "ينقص" },
+  { id: "d7", patientId: "p4", title: "موافقة العلاج", category: "consent", status: "received", uploadedAt: isoDate(-60), notes: "موقعة من ولي الأمر" },
+  { id: "d8", patientId: "p10", title: "نسخة الهوية", category: "identity", status: "missing", uploadedAt: null, notes: "ينقص" },
+  { id: "d9", patientId: "p10", title: "تحويل طبي", category: "referral", status: "received", uploadedAt: isoDate(-55), notes: "تحويل من مستشفى المدينة" },
+  { id: "d10", patientId: "p6", title: "موافقة ولي الأمر", category: "consent", status: "received", uploadedAt: isoDate(-45), notes: "موقعة من الأم" },
+  { id: "d11", patientId: "p6", title: "تقرير تقييم", category: "medical-report", status: "reviewed", uploadedAt: isoDate(-30), notes: "تقييم أولي" },
+  { id: "d12", patientId: "p3", title: "مستند إداري", category: "administrative", status: "received", uploadedAt: isoDate(-200), notes: "استمارة تسجيل" },
+];
+
+const conversations: Conversation[] = [
+  {
+    id: "conv1", patientId: "p6", messages: [
+      { id: "m1", sender: "therapist", text: "السلام عليكم، كيف تسير تمارين هند في المنزل؟", timestamp: isoDateTime(-2, 6) },
+      { id: "m2", sender: "family", text: "وعليكم السلام، الحمدلہ تسير جيداً وتحب التمارين", timestamp: isoDateTime(-2, 5) },
+      { id: "m3", sender: "therapist", text: "ممتاز! واصلوا معها وأخبروني بأي ملاحظة", timestamp: isoDateTime(-2, 4) },
+      { id: "m4", sender: "family", text: "شكراً لكم، سنخبركم بكل تطور", timestamp: isoDateTime(-2, 3) },
+    ],
+  },
+  {
+    id: "conv2", patientId: "p10", messages: [
+      { id: "m5", sender: "therapist", text: "مرحباً، نريد متابعة تقدم جواهر في تمارين التوازن", timestamp: isoDateTime(-1, 4) },
+      { id: "m6", sender: "family", text: "مرحباً، حاولنا التمارين أمس وكانت جيدة", timestamp: isoDateTime(-1, 3) },
+    ],
+  },
+];
+
+const companionMessages: CompanionMessage[] = [
+  { id: "cm1", sender: "companion", text: "مرحباً بك! أنا مرافقك الذكي التجريبي. كيف يمكنني مساعدتك اليوم؟", timestamp: isoDateTime(0, 0) },
 ];
 
 export function generateSeedData(): DemoData {
@@ -117,6 +171,9 @@ export function generateSeedData(): DemoData {
     sessions,
     exercises,
     notifications,
+    documents,
+    conversations,
+    companionMessages,
     version: SEED_VERSION,
   };
 }

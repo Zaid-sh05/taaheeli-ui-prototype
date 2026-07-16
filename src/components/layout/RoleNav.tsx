@@ -10,7 +10,6 @@ interface NavItem {
   to: string;
   label: string;
   icon: string;
-  badgeCount?: number;
 }
 
 const NAV_CONFIG: Record<RoleKey, NavItem[]> = {
@@ -23,46 +22,50 @@ const NAV_CONFIG: Record<RoleKey, NavItem[]> = {
     { to: "/manager/notifications", label: "التنبيهات", icon: "Bell" },
   ],
   doctor: [
-    { to: "/therapist", label: "مرضاي", icon: "Users" },
+    { to: "/therapist", label: "نظرة عامة", icon: "LayoutDashboard" },
+    { to: "/therapist/patients", label: "مرضاي", icon: "Users" },
     { to: "/therapist/plans", label: "الخطط العلاجية", icon: "ClipboardList" },
     { to: "/therapist/appointments", label: "المواعيد", icon: "CalendarDays" },
     { to: "/therapist/notifications", label: "التنبيهات", icon: "Bell" },
   ],
   admin: [
-    { to: "/admin", label: "التسجيلات", icon: "UserPlus" },
+    { to: "/admin", label: "نظرة عامة", icon: "LayoutDashboard" },
+    { to: "/admin/registrations", label: "التسجيلات", icon: "UserPlus" },
     { to: "/admin/appointments", label: "المواعيد", icon: "CalendarDays" },
+    { to: "/admin/documents", label: "المستندات", icon: "FileText" },
     { to: "/admin/notifications", label: "التنبيهات", icon: "Bell" },
   ],
   parent: [
     { to: "/family", label: "نظرة عامة", icon: "TrendingUp" },
+    { to: "/family/progress", label: "التقدم", icon: "Activity" },
     { to: "/family/appointments", label: "المواعيد", icon: "CalendarDays" },
     { to: "/family/messages", label: "التواصل", icon: "MessageSquare" },
+    { to: "/family/reports", label: "التقارير", icon: "FileText" },
   ],
   patient: [
     { to: "/patient", label: "برنامجي", icon: "HeartPulse" },
     { to: "/patient/appointments", label: "مواعيدي", icon: "CalendarDays" },
     { to: "/patient/exercises", label: "تماريني", icon: "Dumbbell" },
+    { to: "/patient/companion", label: "المرافق الذكي", icon: "MessageCircle" },
   ],
 };
+
+const HOME_ROUTES = ["/manager", "/therapist", "/admin", "/patient", "/family"];
 
 export function RoleNav({ role }: { role: RoleKey }) {
   const { data } = useDemoData();
 
-  const pendingCount = useMemo(
-    () => data.requests.filter((r) => r.status === "pending").length,
-    [data.requests],
-  );
-
   const unreadNotifCount = useMemo(
-    () => data.notifications.filter((n) => !n.read).length,
-    [data.notifications],
+    () => data.notifications.filter((n) => !n.read && (!n.targetRole || n.targetRole === role)).length,
+    [data.notifications, role],
   );
 
   const items = NAV_CONFIG[role] ?? [];
 
   function getBadge(item: NavItem): number | undefined {
-    if (role === "manager" && item.to === "/manager/requests") return pendingCount;
-    if (role === "manager" && item.to === "/manager/notifications") return unreadNotifCount;
+    if (role === "manager" && item.to === "/manager/requests") {
+      return data.requests.filter((r) => r.status === "pending").length;
+    }
     if (item.to.includes("notifications")) return unreadNotifCount;
     return undefined;
   }
@@ -77,7 +80,7 @@ export function RoleNav({ role }: { role: RoleKey }) {
             <li key={item.to}>
               <NavLink
                 to={item.to}
-                end={item.to === "/manager" || item.to === "/therapist" || item.to === "/admin" || item.to === "/patient" || item.to === "/family"}
+                end={HOME_ROUTES.includes(item.to)}
                 className={({ isActive }) =>
                   cn(
                     "inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-base font-semibold text-neutral-700 hover:bg-primary-50 hover:text-primary-700 transition-colors min-h-[48px] whitespace-nowrap",
@@ -90,7 +93,7 @@ export function RoleNav({ role }: { role: RoleKey }) {
                 {badge !== undefined && badge > 0 && (
                   <span
                     className="inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded-full bg-accent-500 text-white text-sm font-bold"
-                    aria-label={`${badge} طلبات بانتظار التفعيل`}
+                    aria-label={`${badge} تنبيهات غير مقروءة`}
                   >
                     {badge}
                   </span>
